@@ -1,0 +1,114 @@
+# Copyright (c) 2023, MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+# Subject to FAR 52.227-11 - Patent Rights - Ownership by the Contractor (May 2014).
+defaults:
+  - model: q_density_whole
+  - data: inference_data
+  - override hydra/launcher: submitit_slurm
+  - _self_
+
+# number of nodes
+nnodes: 1
+# number of processes/devices per node
+nprocs: 1
+
+# training steps
+steps: 1e6
+
+# (optional) save cubes on test
+cube_dir: ./test_file
+
+# checkpoint, will resume training if path exists
+checkpoint_path1: models/AdaptiveNet.pt
+checkpoint_path2: models/AdaptiveNet_density.pt
+
+# tensorboard, logs, and tmp files
+log_dir: ${hydra:run.dir}
+
+seed: 42
+cutoff: 4.0
+batch_size: 16
+split: "split"
+lr: 0.005
+spin: False
+only_spin: False
+mag: False
+q: True
+density: True
+
+hydra:
+  job:
+    name: mp_e3_q_density
+  run:
+    dir: ./results/${hydra.job.name}/${now:%Y-%m-%d-%H-%M-%S}
+  sweep:
+    dir: ${hydra.run.dir}
+
+  launcher:
+    submitit_folder: ${hydra.sweep.dir}/.submitit
+    partition: gpu
+    nodes: ${nnodes}
+    tasks_per_node: 1 # note, multiprocessing will handle multitasking per node
+    #constraint: xeon-g6
+    timeout_min: 288000
+    cpus_per_task: 8
+    #exclude: node[1-2]
+    additional_parameters:
+      gres: gpu:1
+      #exclusive: True
+      distribution: nopack
+  callbacks:
+    log_job_return:
+      _target_: hydra.experimental.callbacks.LogJobReturnCallback
+
+
+
+#hydra:
+#  job:
+#    name: mp_e3_q_density
+#  run:
+#    dir: ./results/${hydra.job.name}/${now:%Y-%m-%d-%H-%M-%S}
+#  sweep:
+#    dir: ${hydra.run.dir}
+#  launcher:
+#    _target_: hydra_plugins.hydra_submitit_launcher.submitit_launcher.LocalLauncher  
+#    submitit_folder: ${hydra.sweep.dir}/.submitit/%j  
+#    timeout_min: 288000
+#    cpus_per_task: 30
+#    gpus_per_node: 1 
+#    tasks_per_node: 1
+#    mem_gb: 100
+#    nodes: 1  
+#    name: ${hydra.job.name}
+
+data:
+  batch_size: ${batch_size}
+  train_workers: 8
+  val_workers: 8
+  pin_memory: True
+  train_probes: 200
+  val_probes: 400
+  test_probes: 
+  spin: ${spin}
+  mag: ${mag}
+  q: ${q}
+  density: ${density}
+  graph_constructor:
+    cutoff: ${cutoff}
+    disable_pbc: False
+
+
+model:
+  optimizer:
+    lr: ${lr}
+  lr_scheduler:
+    beta: 3e3
+  model1:
+    cutoff: ${cutoff}
+    num_interactions: 3
+    num_neighbors: 20
+    lmax: 4
+  model2:
+    cutoff: ${cutoff}
+    spin: ${spin}
+    mag: ${mag}
+    q: ${q}

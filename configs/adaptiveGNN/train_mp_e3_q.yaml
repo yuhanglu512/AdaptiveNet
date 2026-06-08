@@ -1,0 +1,108 @@
+# Copyright (c) 2023, MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+# Subject to FAR 52.227-11 - Patent Rights - Ownership by the Contractor (May 2014).
+defaults:
+  - model: AdaptiveGNN
+  - data: mp_data
+  - override hydra/launcher: submitit_slurm
+  - _self_
+
+# number of nodes
+nnodes: 1
+# number of processes/devices per node
+nprocs: 1
+
+# training steps
+steps: 1e6
+
+# (optional) save cubes on test
+cube_dir:
+
+# checkpoint, will resume training if path exists
+checkpoint_path: models/AdaptiveGNN.pt
+
+# tensorboard, logs, and tmp files
+log_dir: ${hydra:run.dir}
+
+seed: 42
+cutoff: 4.0
+batch_size: 64
+split: "split"
+lr: 0.005
+spin: True
+only_spin: True
+mag: True
+q: True
+
+hydra:
+  job:
+    name: mp_e3_q
+  run:
+    dir: ./results/${hydra.job.name}/${now:%Y-%m-%d-%H-%M-%S}
+  sweep:
+    dir: ${hydra.run.dir}
+
+  launcher:
+    submitit_folder: ${hydra.sweep.dir}/.submitit
+    partition: gpu
+    nodes: ${nnodes}
+    tasks_per_node: 1 # note, multiprocessing will handle multitasking per node
+    #constraint: xeon-g6
+    timeout_min: 288000
+    cpus_per_task: 8
+    #exclude: node[1-2]
+    additional_parameters:
+      gres: gpu:1
+      exclusive: True
+      distribution: nopack
+  callbacks:
+    log_job_return:
+      _target_: hydra.experimental.callbacks.LogJobReturnCallback
+
+
+
+#hydra:
+#  job:
+#    name: mp_e3_final
+#  run:
+#    dir: ./results/${hydra.job.name}/${now:%Y-%m-%d-%H-%M-%S}
+#  sweep:
+#    dir: ${hydra.run.dir}
+#  launcher:
+#    _target_: hydra_plugins.hydra_submitit_launcher.submitit_launcher.LocalLauncher  
+#    submitit_folder: ${hydra.sweep.dir}/.submitit/%j  
+#    timeout_min: 288000
+#    cpus_per_task: 12
+#    gpus_per_node: 1 
+#    tasks_per_node: 1
+#    mem_gb: 100
+#    nodes: 1  
+#    name: ${hydra.job.name}
+
+data:
+  batch_size: ${batch_size}
+  train_workers: 0
+  val_workers: 0
+  pin_memory: False
+  train_probes: 200
+  val_probes: 400
+  test_probes: 1000
+  spin: ${spin}
+  mag: ${mag}
+  q: ${q}
+  split_file: ./data/mp/${split}.json
+  graph_constructor:
+    _target_: src.charge3net.data.graph_construction.Atomic_Q_Constructor
+    cutoff: ${cutoff}
+    disable_pbc: False
+
+
+model:
+  optimizer:
+    lr: ${lr}
+  lr_scheduler:
+    beta: 3e3
+  model:
+    cutoff: ${cutoff}
+    num_interactions: 3
+    num_neighbors: 20
+    lmax: 4
