@@ -1,0 +1,27 @@
+Global Parameters
+ISTART =  1            # 读取已有的 WAVECAR（如果有，可加速）
+ISPIN  =  1
+ICHARG =  1            # 从 CHGCAR 文件读取初始电荷密度（允许自洽更新）
+LREAL  =  Auto
+ENCUT  =  520
+PREC   =  Normal
+LWAVE  = .TRUE.
+LCHARG = .TRUE.
+ADDGRID= .TRUE.
+#NCORE = 8
+IVDW = 12
+#ALGO = VeryFast
+
+Ionic Relaxation
+NSW    =  1            # 只做一步离子步
+IBRION =  2            # 共轭梯度法（Conjugate Gradient）优化离子位置
+ISIF   =  0            # 只优化原子位置，固定晶胞形状和体积
+# POTIM =  0.5         # 初始步长（默认 0.5，可不写）
+
+Electronic Control
+NELM   =  10            # 最多 2 个电子步
+NELMIN =  1            # 至少 2 个电子步（保证波函数和密度有适度更新）
+EDIFF  =  1E-04        # 电子步收敛标准（因只跑 2 步，通常不会达到，但无影响）
+ISMEAR =  0
+SIGMA  =  0.05
+LORBIT =  11

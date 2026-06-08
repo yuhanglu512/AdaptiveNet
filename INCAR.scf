@@ -1,0 +1,23 @@
+Global Parameters
+ISTART =  0            # 第一次计算，不从已有的 WAVECAR 读取
+ISPIN  =  1
+ICHARG =  2            # 从原子电荷密度叠加初始
+LREAL  =  Auto
+ENCUT  =  520
+PREC   =  Normal
+LWAVE  = .TRUE.
+LCHARG = .TRUE.
+ADDGRID= .TRUE.
+IVDW = 12
+#NCORE = 8
+#ALGO = VeryFast
+
+Static Calculation
+ISMEAR =  0
+SIGMA  =  0.05
+LORBIT =  11
+EDIFF  =  1E-08
+IBRION = -1            # 离子不移动
+NSW    =  0            # 离子步数为 0
+ISIF   =  0            # 固定晶胞形状和体积
+NELM   =  1
