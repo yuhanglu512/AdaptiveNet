@@ -96,7 +96,7 @@ python src/train_from_config.py -cd "configs/AdaptiveNet" -cn "train_mp_e3_q_den
 ```bash
 python download/download_materials_project.py \
 	--out_path ./data/mp_raw \
-	--workers <number of workers> \
+	--workers 5\
 	--task_id_file ./data/mpid_to_task_id_map.json \
 	--mp_api_key <MP API key>
 ```
