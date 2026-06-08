@@ -10,7 +10,7 @@ AdaptiveNet capture long-range effects through an iterative module, which decoup
 Install dependencies in environment:
 
 ```bash
-pip install -r requirements.txt
+conda env create -f environment.yml
 ```
 
 ### Test Pretrained Models
