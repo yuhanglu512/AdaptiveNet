@@ -105,7 +105,7 @@ API key can be obtained in Materials Project.
 
 2. Convert the CHGCAR files in directory mp_raw into pkl and npy file in directory mp:
 ```bash
-python scripts/batch_pickle_mp_charge_density.py --raw_data_dir ./data/mp_raw --pkl_data_dir ./data/mp/
+python batch_pickle_mp_charge_density.py --raw_data_dir ./data/mp_raw --pkl_data_dir ./data/mp/
 ```
 
 Theoretically, the rest steps are not necessary unless there is data issue.
@@ -113,6 +113,6 @@ Theoretically, the rest steps are not necessary unless there is data issue.
 3. Create filelist by `ls ./data/mp_raw -1 >  ./data/mp/filelist.txt`
 4. Generate a file containing CHGCAR information.
 ```bash
-python scripts/write_mp_probe_count_file.py --filelist ./data/mp_raw/filelist.txt --workers WORKERS
+python write_mp_probe_count_file.py --filelist ./data/mp_raw/filelist.txt --workers WORKERS
 ```
 5. Write the datasplits with [scripts/write_mp_datasplits.py](./scripts/write_mp_datasplits.py).
