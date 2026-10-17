@@ -5,6 +5,20 @@
 
 AdaptiveNet capture long-range effects through an iterative module, which decouple global charge equilibration from electron density prediction.
 
+## Acknowledgement and provenance
+
+This repository builds on the open-source **ChargE3Net** implementation of Koker *et al.* — T. Koker, K. Quigley, E. Taw, K. Tibbetts and L. Li, "Higher-order equivariant neural networks for charge density prediction in materials", *npj Comput. Mater.* **10**, 161 (2024) — which is distributed under the MIT licence. A substantial part of the code is retained from that codebase, in particular the equivariant message-passing layers, the probe-based density model and the Materials Project data pipeline.
+
+The components introduced in this work are:
+
+- the **AdaptiveBlock**, a weight-tied iterative module together with its convergence schedule, which extends the reach of information on the sparse atomic graph until the predicted charges converge;
+- the **charge-conditioned electron density model**, in which the predicted per-atom charges are supplied to the density network as an additional scalar feature;
+- the **inference and VASP-relaxation interfaces**, including the grid conversion utilities and the relaxation loop used for the moiré superlattices.
+
+## Licence
+
+The MIT licence text and the original copyright notice (Copyright (c) 2023 Massachusetts Institute of Technology) are retained unmodified in [`LICENSE`](./LICENSE). The components listed above are released under the same licence.
+
 ## Usage
 
 Install dependencies in environment:
